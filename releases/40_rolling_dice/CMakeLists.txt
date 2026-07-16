@@ -1,0 +1,58 @@
+# == DO NOT EDIT THE FOLLOWING LINES for the Raspberry Pi Pico VS Code Extension to work ==
+if(WIN32)
+    set(USERHOME $ENV{USERPROFILE})
+else()
+    set(USERHOME $ENV{HOME})
+endif()
+set(sdkVersion 2.2.0)
+set(toolchainVersion 14_2_Rel1)
+set(picotoolVersion 2.2.0)
+set(picoVscode ${USERHOME}/.pico-sdk/cmake/pico-vscode.cmake)
+if (EXISTS ${picoVscode})
+    include(${picoVscode})
+endif()
+# ====================================================================================
+set(PICO_BOARD pico CACHE STRING "Board type")
+
+cmake_minimum_required(VERSION 3.13)
+include(pico_sdk_import.cmake)
+
+set(CARD_NAME rolling_dice)
+project(rolling_dice C CXX ASM)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+pico_sdk_init()
+
+# Rolling Dice: press Z down to roll a die; LEDs show the result 1–6.
+add_executable(${CARD_NAME}
+    main.cpp
+)
+
+target_include_directories(${CARD_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+
+target_link_libraries(${CARD_NAME}
+    pico_unique_id
+    pico_rand
+    pico_stdlib
+    hardware_dma
+    hardware_i2c
+    hardware_pwm
+    hardware_adc
+    hardware_spi
+)
+
+pico_add_extra_outputs(${CARD_NAME})
+
+# Run entirely from RAM so flash-cache stalls cannot overrun the ~20 us
+# sample budget.
+pico_set_binary_type(${CARD_NAME} copy_to_ram)
+
+# Extra oscillator startup delay: essential for reliable reset/boot.
+target_compile_definitions(${CARD_NAME} PRIVATE PICO_XOSC_STARTUP_DELAY_MULTIPLIER=64)
+
+# USB stdio interferes with the normalisation probe; keep it off.
+pico_enable_stdio_usb(${CARD_NAME} 0)
+
+# Catch accidental float/double promotion on the FPU-less RP2040.
+target_compile_options(${CARD_NAME} PRIVATE -Wall -Wextra -Wdouble-promotion -Wfloat-conversion -O3)
+target_link_options(${CARD_NAME} PRIVATE -Wl,--print-memory-usage)

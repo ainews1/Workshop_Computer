@@ -1,0 +1,20 @@
+Name: Rolling Dice
+Description: Press the Z switch down to roll a die; LEDs blink randomly for ~2 seconds, then the result 1–6 is shown on the LEDs.
+Language: C++ (RP2040 Pico SDK)
+Creator: AI Assistant
+Version: 1.1
+Status: Released
+License: MIT
+
+panel:
+  inputs: []
+  outputs: []
+  controls:
+    switch:
+      - id: Z
+        name: Roll
+        description: Down = momentary roll button
+    leds:
+      - id: LED0-5
+        name: Rolled value
+        description: Random blinking during the roll; afterwards, number of lit LEDs equals the rolled value 1–6
