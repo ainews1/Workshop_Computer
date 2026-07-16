@@ -16,7 +16,7 @@ Press the **Z switch down** to roll a die. For about two seconds the six LEDs bl
 Requires the Raspberry Pi Pico SDK.
 
 ```bash
-cd releases/102_rolling_dice
+cd releases/40_rolling_dice
 mkdir build && cd build
 cmake .. -G "MinGW Makefiles" -DPICO_SDK_PATH=/path/to/pico-sdk -DPICO_NO_PICOTOOL=1
 mingw32-make -j4
